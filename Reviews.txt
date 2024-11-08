@@ -1,0 +1,4 @@
+1) Stocker le téléphone de l'utilisateur sur le Qr Code
+2) Notification par SMS pour transfert reçu
+3) Notification par SMS pour transfert annulé
+4) Notification pour planification transfert
