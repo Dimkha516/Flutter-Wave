@@ -39,6 +39,7 @@ Route::prefix('v1')->group(function () {
     });
 
 
+
     //----------------- ROUTES TRANSACTIONS:
     Route::prefix('transactions')->group(function () {
         Route::middleware('auth:api')->post('/send', [TransactionController::class, 'sendMoney']);

@@ -43,6 +43,7 @@ return [
         'api' => [
             'driver' => 'passport',
             'provider' => 'clients', // Indiquez ici que le provider est 'clients'
+            'hash' => false,
         ],
     ],
 

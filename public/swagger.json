@@ -1,0 +1,400 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "API de gestion de clients et de transactions",
+        "description": "Documentation API pour la gestion des clients et des transactions, incluant l'authentification, les opérations CRUD et les transactions."
+    },
+    "host": "localhost:8000",
+    "basePath": "/api/v1",
+    "schemes": ["http"],
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "description": "Token au format `Bearer {token}`"
+        }
+    },
+    "paths": {
+        "/clients": {
+            "get": {
+                "tags": ["Clients"],
+                "summary": "Liste de tous les clients",
+                "description": "Récupère la liste de tous les clients enregistrés.",
+                "security": [{ "BearerAuth": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Succès",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": { "type": "boolean" },
+                                "message": { "type": "string" },
+                                "data": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/definitions/Client" }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non autorisé"
+                    },
+                    "404": {
+                        "description": "Aucun client trouvé"
+                    }
+                }
+            }
+        },
+        "/clients/create": {
+            "post": {
+                "tags": ["Clients"],
+                "summary": "Créer un nouveau client",
+                "description": "Crée un client avec les informations fournies.",
+                "security": [{ "BearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "client",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/RegisterClientRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Client créé avec succès",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "data": { "$ref": "#/definitions/Client" },
+                                "message": { "type": "string" }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non autorisé"
+                    },
+                    "500": {
+                        "description": "Erreur de création de client"
+                    }
+                }
+            }
+        },
+        "/transactions/send": {
+            "post": {
+                "tags": ["Transactions"],
+                "summary": "Envoyer de l'argent",
+                "description": "Permet d'envoyer de l'argent à un autre utilisateur.",
+                "security": [{ "BearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "numero_destinataire": {
+                                    "type": "string",
+                                    "example": "0612345678",
+                                    "description": "Numéro de téléphone du destinataire"
+                                },
+                                "montant": {
+                                    "type": "number",
+                                    "example": 100,
+                                    "description": "Montant à envoyer"
+                                }
+                            },
+                            "required": ["numero_destinataire", "montant"]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transaction effectuée avec succès",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "transaction": { "type": "object" },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Transaction effectuée avec succès"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non autorisé"
+                    },
+                    "400": {
+                        "description": "Erreur de validation ou de solde insuffisant",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "example": "Le montant à envoyer ne peut pas dépasser votre solde."
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/transactions/historique": {
+            "get": {
+                "tags": ["Transactions"],
+                "summary": "Lister les transactions de l'utilisateur",
+                "description": "Retourne l'historique des transactions de l'utilisateur authentifié.",
+                "security": [{ "BearerAuth": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Liste des transactions",
+                        "schema": {
+                            "type": "array",
+                            "items": { "type": "object" }
+                        }
+                    },
+                    "401": {
+                        "description": "Non autorisé"
+                    }
+                }
+            }
+        },
+        "/transactions/send-multiple": {
+            "post": {
+                "tags": ["Transactions"],
+                "summary": "Envoyer de l'argent à plusieurs destinataires",
+                "description": "Permet d'envoyer de l'argent à plusieurs numéros de téléphone en une seule transaction.",
+                "security": [{ "BearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "phone_numbers": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "example": "0612345678"
+                                    },
+                                    "description": "Liste des numéros de téléphone des destinataires"
+                                },
+                                "amount": {
+                                    "type": "number",
+                                    "example": 50,
+                                    "description": "Montant à envoyer à chaque destinataire"
+                                }
+                            },
+                            "required": ["phone_numbers", "amount"]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transaction multiple effectuée avec succès",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "total_sent": { "type": "number" },
+                                "successful_transfers": {
+                                    "type": "array",
+                                    "items": { "type": "string" }
+                                },
+                                "failed_transfers": {
+                                    "type": "array",
+                                    "items": { "type": "string" }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non autorisé"
+                    },
+                    "400": {
+                        "description": "Erreur de validation ou solde insuffisant",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": { "type": "string" }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/{transactionId}/cancel": {
+            "post": {
+                "tags": ["Transactions"],
+                "summary": "Annuler une transaction",
+                "description": "Permet d'annuler une transaction existante par son identifiant.",
+                "security": [{ "BearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "transactionId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "description": "L'identifiant de la transaction à annuler"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transaction annulée avec succès",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "example": "Transaction annulée avec succès"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non autorisé"
+                    },
+                    "404": {
+                        "description": "Transaction non trouvée"
+                    }
+                }
+            }
+        },
+        "/planification": {
+            "post": {
+                "tags": ["Transactions"],
+                "summary": "Planifier une transaction",
+                "description": "Permet de planifier une nouvelle transaction pour une exécution future.",
+                "security": [{ "BearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "numero_destinataire": {
+                                    "type": "string",
+                                    "example": "0612345678",
+                                    "description": "Numéro de téléphone du destinataire"
+                                },
+                                "montant": {
+                                    "type": "number",
+                                    "example": 100,
+                                    "description": "Montant à envoyer"
+                                },
+                                "date_execution": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "example": "2024-11-08T10:00:00Z",
+                                    "description": "Date et heure de l'exécution de la transaction"
+                                }
+                            },
+                            "required": [
+                                "numero_destinataire",
+                                "montant",
+                                "date_execution"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Transaction planifiée avec succès",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "example": "Transaction planifiée avec succès"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non autorisé"
+                    },
+                    "400": {
+                        "description": "Erreur de validation des données fournies"
+                    }
+                }
+            }
+        },
+        "/{shedulTransactionId}/cancelShedule": {
+            "post": {
+                "tags": ["Transactions"],
+                "summary": "Annuler une transaction planifiée",
+                "description": "Permet d'annuler une transaction planifiée par son identifiant.",
+                "security": [{ "BearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "shedulTransactionId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "description": "L'identifiant de la transaction planifiée à annuler"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transaction planifiée annulée avec succès",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "example": "Transaction planifiée annulée avec succès"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non autorisé"
+                    },
+                    "404": {
+                        "description": "Transaction planifiée non trouvée"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Client": {
+            "type": "object",
+            "properties": {
+                "id": { "type": "integer" },
+                "nom": { "type": "string" },
+                "prenom": { "type": "string" },
+                "telephone": { "type": "string" },
+                "adresse": { "type": "string" },
+                "qr_code": { "type": "string" },
+                "solde": { "type": "integer" }
+            }
+        },
+        "RegisterClientRequest": {
+            "type": "object",
+            "properties": {
+                "nom": { "type": "string" },
+                "prenom": { "type": "string" },
+                "telephone": { "type": "string" },
+                "adresse": { "type": "string" },
+                "qr_code": { "type": "string" },
+                "solde": { "type": "integer" }
+            }
+        },
+        "LoginRequest": {
+            "type": "object",
+            "properties": {
+                "telephone": { "type": "string" },
+                "password": { "type": "string" }
+            }
+        }
+    }
+}
