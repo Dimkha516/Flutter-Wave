@@ -2,3 +2,59 @@
 2) Notification par SMS pour transfert reçu
 3) Notification par SMS pour transfert annulé
 4) Notification pour planification transfert
+
+
+Corrige moi l'erreur: 
+ERROR: The Compose file './docker-compose.yml' is invalid because:
+services.app.environment contains an invalid type, it should be an object, or an array. 
+Voici docker-compose.yml:
+version: '3.8'
+services:
+  app:
+    ports:
+      - "8089:8089"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_app
+    volumes:
+      - .:/var/www
+    networks:
+      - app-network
+    environment:
+      DB_CONNECTION=pgsql
+      DB_HOST=db
+      DB_PORT=5432
+      DB_DATABASE=db_name
+      DB_USERNAME=db_user
+      DB_PASSWORD=db_password
+
+  webserver:
+    image: nginx:latest
+    container_name: laravel_nginx
+    ports:
+      - "8089:80"  # Mapper le port externe 8089 au port interne 80 de Nginx
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - .:/var/www  # Assure-toi que la racine est correcte
+    networks:
+      - app-network
+
+  db:
+    image: postgres:13  # Utiliser l'image officielle de PostgreSQL
+    container_name: laravel_postgres
+    environment:
+      POSTGRES_DB: db_name
+      POSTGRES_USER: db_user
+      POSTGRES_PASSWORD: db_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
