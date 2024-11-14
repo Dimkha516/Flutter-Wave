@@ -19,7 +19,7 @@ class RegisterClientRequest extends FormRequest
                 'required',
                 'string',
                 'unique:clients,telephone',
-                'regex:/^((77|76|75|70|78)\d{3}\d{2}\d{2})|(33[8]\d{2}\d{2}\d{2})$/',
+                'regex:/^(\+221\s?)?((77|76|75|70|78)\s?\d{3}\s?\d{2}\s?\d{2}|33\s?8\s?\d{3}\s?\d{3})$/',
             ],
             'email' => 'required|string|email|unique:clients,email',
             'mot_de_passe' => 'required|numeric|min:4',

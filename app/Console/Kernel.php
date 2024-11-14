@@ -14,7 +14,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // Exécuter le job de planification des transactions chaque le 25:
-        $schedule->job(new ProcessScheduledTransactions())->monthlyOn(25, '00:00');
+        // $schedule->job(new ProcessScheduledTransactions()->monthlyOn(25, '00:00');
+        $schedule->job(new ProcessScheduledTransactions)->dailyAt('10:00');
     }
 
     /**
@@ -22,7 +23,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands(): void
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

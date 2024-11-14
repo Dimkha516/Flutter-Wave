@@ -79,7 +79,7 @@ class TransactionService
         try {
             foreach ($phoneNumbers as $phoneNumber) {
                 if ($phoneNumber === $client->telephone) {
-                    throw new \Exception('Vous ne pouvez pas effectuer un dépôt pour vous même');
+                    throw new \Exception('Votre numéro ne doit pas faire partie des séléctions');
                 }
                 if ($remainingBalance >= $amount) {
                     // Effectuer la transaction si le solde est suffisant

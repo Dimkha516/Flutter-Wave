@@ -24,10 +24,12 @@ class ScheduledTransactionRequest extends FormRequest
         return [
             'numero_destinataire' => [
                 'required',
-                'regex:/^((77|76|75|70|78)\d{3}\d{2}\d{2})|(33[8]\d{2}\d{2}\d{2})$/',
+                'regex:/^(\+221\s?)?((77|76|75|70|78)\s?\d{3}\s?\d{2}\s?\d{2}|33\s?8\s?\d{3}\s?\d{3})$/',
                 'different:client.telephone'
             ],
-            'montant' => 'required|numeric|min:0.01'
+            'montant' => 'required|numeric|min:0.01',
+            'date' => 'required|date' // Ajout de la règle pour la date
+
         ];
     }
 
@@ -38,7 +40,9 @@ class ScheduledTransactionRequest extends FormRequest
             'numero_destinataire.regex' => 'Le format du numéro du destinataire est invalide.',
             'montant.required' => 'Le montant est obligatoire.',
             'montant.numeric' => 'Le montant doit être un nombre.',
-            'montant.min' => 'Le montant doit être supérieur à zéro.'
+            'montant.min' => 'Le montant doit être supérieur à zéro.',
+            'date.required' => 'La date de la transaction est obligatoire.', // Message pour la date
+        'date.date' => 'La date de la transaction doit être une date valide.' // Message pour la validation de type date
         ];
     }
 }

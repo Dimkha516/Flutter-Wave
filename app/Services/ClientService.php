@@ -5,6 +5,7 @@ use App\Jobs\GenerateQrCodeJob;
 use App\Jobs\SendClientCardJob;
 use App\Models\Client;
 use App\Repositories\ClientRepository;
+use Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Validation\ValidationException;
 // use BaconQrCode\Encoder\QrCode;
@@ -77,6 +78,17 @@ class ClientService
 
         // Générer un token Passport pour le client
         return $client->createToken('Client Access Token')->accessToken;
+    }
+
+    public function logout()
+    {
+
+        $client = Auth::user();
+        $client->tokens->each(function ($token) {
+            $token->delete();
+        });
+
+        return ['success' => true, 'message' => 'Déconnexion réussie', 'status' => 200];
     }
 
 }

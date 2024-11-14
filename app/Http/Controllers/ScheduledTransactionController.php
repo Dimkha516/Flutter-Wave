@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ScheduledTransactionRequest;
 use App\Services\ScheduledTransactionService;
+use Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -14,6 +15,16 @@ class ScheduledTransactionController extends Controller
     public function __construct(ScheduledTransactionService $scheduledTransactionService)
     {
         $this->scheduledTransactionService = $scheduledTransactionService;
+    }
+
+    public function index()
+    {
+        // Obtenir l'utilisateur actuellement authentifié
+        $client = Auth::user();
+
+        $sheduledTransactions = $this->scheduledTransactionService->getClientSheduledTransactions($client->id);
+        
+        return response()->json($sheduledTransactions);
     }
 
     public function store(ScheduledTransactionRequest $request): JsonResponse

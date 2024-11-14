@@ -1,0 +1,2 @@
+1) Créer un dossier routes pour stocker toutes les routes de l'application
+2) Créer un StateManagement (pour la centralisationn des l'état des données)

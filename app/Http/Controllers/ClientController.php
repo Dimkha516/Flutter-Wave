@@ -3,8 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterClientRequest;
 use App\Services\ClientService;
+use Auth;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\LoginRequest;
+use Request;
 
 
 class ClientController extends Controller
@@ -48,5 +50,23 @@ class ClientController extends Controller
     {
         $token = $this->clientService->authenticateClient($request->validated());
         return response()->json(['token' => $token, 'message' => 'Connexion réussie'], 200);
+    }
+
+    public function getBalance()
+    {
+        $client = Auth::user();
+        $balance = $client->solde;
+
+        return response()->json(['balance' => $balance]);
+    }
+
+    public function logout(Request $request)
+    {
+        $result = $this->clientService->logout();
+
+        return response()->json([
+            'success' => $result['success'],
+            'message' => $result['message'],
+        ], $result['status']);
     }
 }

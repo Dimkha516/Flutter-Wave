@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -21,8 +22,9 @@ class ProcessScheduledTransactions implements ShouldQueue
      */
     public function handle(): void
     {
-        // Récupérer toutes les transactions programmées
-        $transactions = ScheduledTransaction::all();
+        // Récupérer les transactions dont la prochaine exécution est aujourd'hui ou avant aujourd'hui
+        $transactions = ScheduledTransaction::where('prochaine_execution', '<=', Carbon::today()->toDateString())->get();
+
 
         foreach ($transactions as $transaction) {
             DB::beginTransaction();
@@ -58,6 +60,9 @@ class ProcessScheduledTransactions implements ShouldQueue
                 DB::rollBack();
                 Log::error("Erreur lors du traitement de la transaction programmée : " . $e->getMessage());
             }
+
+            // Mettre à jour la prochaine date d'exécution
+            $transaction->updateNextExecutionDate();
         }
     }
 }

@@ -1,60 +1,16 @@
-1) Stocker le téléphone de l'utilisateur sur le Qr Code
+1) Stocker les informations de l'utilisateur sur le Qr Code
 2) Notification par SMS pour transfert reçu
 3) Notification par SMS pour transfert annulé
-4) Notification pour planification transfert
+4) Notification pour planification transfert.
 
+Maintenant, nous allons commencer le front-end avec fultter progressivement. Nous travaillerons sur Vscode avec un téléphone physique  en créant le type d'appli correspondant au projet.
+Nous allons d'abord intégrer les pages et composants nécessaires pour avoir un aperçu de l'appli sans encore toucher au backend.
+Je te donne la description des rendus que l'on veut.
 
-Corrige moi l'erreur: 
-ERROR: The Compose file './docker-compose.yml' is invalid because:
-services.app.environment contains an invalid type, it should be an object, or an array. 
-Voici docker-compose.yml:
-version: '3.8'
-services:
-  app:
-    ports:
-      - "8089:8089"
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: laravel_app
-    volumes:
-      - .:/var/www
-    networks:
-      - app-network
-    environment:
-      DB_CONNECTION=pgsql
-      DB_HOST=db
-      DB_PORT=5432
-      DB_DATABASE=db_name
-      DB_USERNAME=db_user
-      DB_PASSWORD=db_password
-
-  webserver:
-    image: nginx:latest
-    container_name: laravel_nginx
-    ports:
-      - "8089:80"  # Mapper le port externe 8089 au port interne 80 de Nginx
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - .:/var/www  # Assure-toi que la racine est correcte
-    networks:
-      - app-network
-
-  db:
-    image: postgres:13  # Utiliser l'image officielle de PostgreSQL
-    container_name: laravel_postgres
-    environment:
-      POSTGRES_DB: db_name
-      POSTGRES_USER: db_user
-      POSTGRES_PASSWORD: db_password
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - app-network
-
-volumes:
-  postgres_data:
-
-networks:
-  app-network:
-    driver: bridge
+. Page d'entrée: Nous aurons une la page login. Pour cette page, l'utilisateur sera invité à saisir son numéro de téléphone (à 9 chiffres commençant
+par 77 ou 78, ou 76 ou 70) et appuyer sur valider, ensuite, un popup apparaît pour qu'il saisi son mot de passe à 4 chiffres. Nous ne ferons pas encore les
+vérifications car on a pas encore lier le backend. Après avoir saisi ces deux données on le redirige vers la page home dont je te donnerais la présentation en suivant.
+Pour le design de la page login, on aura pour la saisi du téléphone une icone avant le formulaire du téléphone avec un petit message de bienvenu.
+Pour le mot de passe, on aura 4 champs pour le code avec autoincrément(quand on saisi sur un champ on passe au champ suivant).
+Il faudra utiliser une architecture bien répartie et ne pas regrouper tout le code en un seul bloc pour une bonne organisation. Il faut aussi bien détailler 
+les étapes et ne pas sauter de phases d'installation, d'import, de configuration ... car je débute avec cette techno. 

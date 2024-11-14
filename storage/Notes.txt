@@ -1,0 +1,2 @@
+Démarrer le server avec: php artisan serve --host=192.168.43.77 --port=8000
+

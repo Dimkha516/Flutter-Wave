@@ -23,7 +23,7 @@ class TransactionRequest extends FormRequest
         if ($this->input('type') === 'envoi') {
             $rules['numero_destinataire'] = [
                 'required',
-                'regex:/^((77|76|75|70|78)\d{7})|(33[8]\d{6})$/',
+                'regex:/^(\+221\s?)?((77|76|75|70|78)\s?\d{3}\s?\d{2}\s?\d{2}|33\s?8\s?\d{3}\s?\d{3})$/',
                 'different:client.telephone'
             ];
         }
